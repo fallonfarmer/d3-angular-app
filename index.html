@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html ng-app="chartApp">
+
+  <head>
+    <meta charset="utf-8" />
+    <title>D3 & AngularJS area chart</title>
+    <link rel="stylesheet" href="static/css/style.css" />
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script data-require="angular.js@1.2.x" src="http://code.angularjs.org/1.2.5/angular.js" data-semver="1.2.5"></script>
+    <script src="static/js/app.js"></script>
+  </head>
+
+  <body ng-controller="appCtrl">
+    <h1>Trends chart with preview slider</h1>
+    <trend-chart class="trend-chart" chart-data="myData"></trend-chart>
+  </body>
+
+</html>
