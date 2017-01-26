@@ -1,12 +1,96 @@
 var app = angular.module('chartApp', []);
 
+app.controller('chartController', ['$scope', '$parse', function($scope, $parse) {
+
+    function buildTrendChart() {
+        var scope = $scope;
+
+        var parseDate = d3.time.format("%Y-%m-%d").parse;
+        var dateFormat = d3.time.format('%m/%d/%Y');
+        var numberFormat = d3.format(",f");
+
+        var trendChart = dc.lineChart('#trend-chart');
+
+        d3.json('static/data/trends2.json', function(data) {
+
+            // FORMAT DATA
+            data.forEach(function(d) {
+                // console.log('DC CHART - parsing data');
+                d.date = parseDate(d.date);
+                d.count = +d.count;
+            });
+
+            // INITIALIZE CROSSFILTER
+            var ndx = crossfilter(data);
+
+            // STORE X AND Y VALUES
+            var dateDim = ndx.dimension(function(d) {
+                return d.date;
+            });
+            var total = dateDim.group().reduceSum(dc.pluck('count'));
+
+            // GET X AXIS DOMAIN - min and max dates
+            var minDate = dateDim.bottom(1)[0].date;
+            var maxDate = dateDim.top(1)[0].date;
+
+            // tooltips for line
+            var tip = d3.tip()
+                .attr('class', 'd3-tip')
+                .offset([-10, -5])
+                .html(function(d) {
+                    // console.log(d);
+                    return "<span style='color: lightgreen'>" + dateFormat(d.x) + "</span><br><strong>Total:</strong> " + numberFormat(d.y);
+                });
+
+            trendChart
+                .width(1000)
+                .height(500)
+                .margins({
+                    top: 15,
+                    right: 0,
+                    bottom: 50,
+                    left: 50
+                })
+                .transitionDuration(100)
+                .dimension(dateDim)
+                .mouseZoomable(true)
+                .renderArea(true)
+                .x(d3.time.scale().domain([minDate, maxDate]))
+                .xAxisLabel("Date received")
+                .yAxisLabel("Total count")
+                .elasticY(true)
+                .renderHorizontalGridLines(true)
+                .brushOn(false)
+                .legend(dc.legend().x(980).y(10).itemHeight(10).gap(5))
+                .group(total)
+                .title(function(d) {
+                    return "";
+                });
+
+            // console.log('DC CHART - render');
+            dc.renderAll();
+            // console.log('DC CHART - render complete');
+
+            d3.selectAll(".dot").call(tip);
+            d3.selectAll(".dot")
+                .on('mouseover', tip.show)
+                .on('mouseleave', tip.hide);
+
+        });
+
+    }
+
+    buildTrendChart();
+
+}]); // END dc-trend-chart controller
+
 app.controller('appCtrl', ['$scope', '$http', function($scope, $http) {
     $scope.getData = function() {
             $http.get('static/data/trends2.json')
                 .success(function(data) {
                     $scope.myData = data;
-                    console.log('$scope.myData');
-                    console.log($scope.myData);
+                    // console.log('$scope.myData');
+                    // console.log($scope.myData);
                 }).error(function(err) {
                     throw err;
                 });
@@ -45,17 +129,17 @@ app.directive('trendChart', function($parse, $window) {
             data: '=chartData',
         },
         link: function(scope, element, attrs) {
-                var counter = 0;
-                console.log(counter);
+                // var counter = 0;
+                // console.log(counter);
                 scope.$watch('data', function(data) {
                     // If we don't pass any data, return out of the element
                     if (!data) return;
 
                     // FORMAT DATA
-                    console.log('scope.data');
-                    console.log(data);
+                    // console.log('scope.data');
+                    // console.log(data);
                     data.forEach(function(d) {
-                        console.log('parsing data');
+                        // console.log('parsing data');
                         d.date = parseDate(d.date);
                         d.count = +d.count;
                     });
@@ -64,17 +148,17 @@ app.directive('trendChart', function($parse, $window) {
                     // not change the scope on the chart so re-rendering without running the digest
                     // cycle should be more performant across the DOM
                     window.onresize = function() {
-                        console.log('window.onresize');
+                        // console.log('window.onresize');
                         scope.render(data);
                     };
 
                     // Render a new chart on window resize
                     // Watch for resize event
                     scope.$watch(function() {
-                        console.log('watch.angular.elem');
+                        // console.log('watch.angular.elem');
                         return angular.element($window)[0].innerWidth;
                     }, function() {
-                        console.log('watch.angular.elem.render');
+                        // console.log('watch.angular.elem.render');
                         scope.render(data);
                     });
 
@@ -82,13 +166,13 @@ app.directive('trendChart', function($parse, $window) {
                     // which was not covered by the previous watch on chartData alone
                     scope.$watch('data', function(newVal, oldVal) {
                         setTimeout(function() {
-                            console.log('watch.newVals');
+                            // console.log('watch.newVals');
                             scope.render(data);
                         }, 10);
                     });
 
                     scope.render = function(data) {
-                        console.log('rendering chart');
+                        // console.log('rendering chart');
                         // If we don't pass any data, return out of the element
                         if (!data) return;
 
@@ -184,7 +268,7 @@ app.directive('trendChart', function($parse, $window) {
                         var rect = svg.append("svg:rect")
                             .attr("class", "pane")
                             .attr("width", width + margin.left + margin.right)
-                            .attr("height", height)
+                            .attr("height", height2) // pane is restricted to preview area only because of main chart tooltips on hover
                             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
                             .call(zoom);
 

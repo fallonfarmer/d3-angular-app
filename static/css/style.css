@@ -1,10 +1,10 @@
 svg {
-  font: 12px sans-serif;
+    font: 12px sans-serif;
 }
 
-.area {
-  fill: lightgreen;
-  clip-path: url(#clip);
+.trend-chart .area {
+    fill: lightgreen;
+    clip-path: url(#clip);
 }
 
 .trend-line {
@@ -12,25 +12,50 @@ svg {
     stroke: green;
     stroke-width: 2;
     clip-path: url(#clip);
+    cursor: pointer;
 }
 
 .axis path,
 .axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
 }
 
 .brush .extent {
-  stroke: #fff;
-  stroke-width: 2;
-  fill-opacity: .125;
-  shape-rendering: crispEdges;
-  clip-path: url(#clip);
+    stroke: #fff;
+    stroke-width: 2;
+    fill-opacity: .125;
+    shape-rendering: crispEdges;
+    clip-path: url(#clip);
 }
 
 rect.pane {
-  cursor: move;
-  fill: none;
-  pointer-events: all;
+    cursor: move;
+    fill: none;
+    pointer-events: all;
+}
+
+#trend-chart .line {
+    fill: none;
+    stroke: green;
+    stroke-width: 2;
+    cursor: pointer;
+}
+
+#trend-chart .area {
+    fill: lightgreen;
+}
+
+#trend-chart .dot,
+#trend-chart .dc-legend rect {
+    fill: green;
+}
+
+.d3-tip {
+    opacity: .785;
+    background-color: black;
+    padding: 5px;
+    font-size: 14px;
+    color: #fff;
 }
