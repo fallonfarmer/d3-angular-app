@@ -36,20 +36,27 @@ rect.pane {
     pointer-events: all;
 }
 
-#trend-chart .line {
+#trend-chart .line,
+#trend-filter-chart .line {
     fill: none;
     stroke: green;
     stroke-width: 2;
     cursor: pointer;
 }
 
-#trend-chart .area {
-    fill: lightgreen;
+#trend-chart .area,
+#trend-filter-chart .area {
+    fill: green;
 }
 
 #trend-chart .dot,
 #trend-chart .dc-legend rect {
     fill: green;
+    cursor: pointer;
+}
+
+#trend-filter-chart .axis.y {
+    visibility: hidden;
 }
 
 .d3-tip {

@@ -10,6 +10,7 @@ app.controller('chartController', ['$scope', '$parse', function($scope, $parse) 
         var numberFormat = d3.format(",f");
 
         var trendChart = dc.lineChart('#trend-chart');
+        var trendFilterChart = dc.lineChart('#trend-filter-chart');
 
         d3.json('static/data/trends2.json', function(data) {
 
@@ -33,6 +34,9 @@ app.controller('chartController', ['$scope', '$parse', function($scope, $parse) 
             var minDate = dateDim.bottom(1)[0].date;
             var maxDate = dateDim.top(1)[0].date;
 
+            // GET Y AXIS MAX - for extra padding at top
+            var maxY = total.top(1)[0].value;
+
             // tooltips for line
             var tip = d3.tip()
                 .attr('class', 'd3-tip')
@@ -42,6 +46,7 @@ app.controller('chartController', ['$scope', '$parse', function($scope, $parse) 
                     return "<span style='color: lightgreen'>" + dateFormat(d.x) + "</span><br><strong>Total:</strong> " + numberFormat(d.y);
                 });
 
+            // main chart
             trendChart
                 .width(1000)
                 .height(500)
@@ -54,11 +59,12 @@ app.controller('chartController', ['$scope', '$parse', function($scope, $parse) 
                 .transitionDuration(100)
                 .dimension(dateDim)
                 .mouseZoomable(true)
+                .rangeChart(trendFilterChart)
                 .renderArea(true)
                 .x(d3.time.scale().domain([minDate, maxDate]))
                 .xAxisLabel("Date received")
+                .y(d3.scale.linear().domain([0, maxY+100]))
                 .yAxisLabel("Total count")
-                .elasticY(true)
                 .renderHorizontalGridLines(true)
                 .brushOn(false)
                 .legend(dc.legend().x(980).y(10).itemHeight(10).gap(5))
@@ -67,14 +73,33 @@ app.controller('chartController', ['$scope', '$parse', function($scope, $parse) 
                     return "";
                 });
 
+            // smaller version for brush filter
+            trendFilterChart
+                .width(1000)
+                .height(100)
+                .margins({
+                    top: 0,
+                    right: 0,
+                    bottom: 30,
+                    left: 60
+                })
+                .transitionDuration(100)
+                .dimension(dateDim)
+                .renderArea(true)
+                .x(d3.time.scale().domain([minDate, maxDate]))
+                .y(d3.scale.linear().domain([0, maxY+500]))
+                .group(total);
+
             // console.log('DC CHART - render');
             dc.renderAll();
             // console.log('DC CHART - render complete');
 
-            d3.selectAll(".dot").call(tip);
-            d3.selectAll(".dot")
-                .on('mouseover', tip.show)
-                .on('mouseleave', tip.hide);
+            trendChart.on("renderlet", function(chart){
+                d3.selectAll(".dot").call(tip);
+                d3.selectAll(".dot")
+                    .on('mouseover', tip.show)
+                    .on('mouseleave', tip.hide);
+            });
 
         });
 
