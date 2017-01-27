@@ -7,6 +7,6 @@ D3 area charts with brush interactions to filter date ranges. Uses angular direc
 - dc.js, which also requires crossfilter
 
 ## Running locally
-1. git clone the repo
-2. cd d3-angular-app
-3. ptyhon -m SimpleHTTPServer
+1. `git clone the repo`
+2. `cd d3-angular-app`
+3. `python -m SimpleHTTPServer`
